@@ -1,0 +1,101 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <limits>
+#include <iomanip> // Para formatear la salida de decimales
+
+using namespace std;
+
+class Graph {
+    int V; // Número de vértices
+    vector<vector<int>> adjList; // Lista de adyacencia
+
+public:
+    Graph(int V) {
+        this->V = V;
+        adjList.resize(V);
+    }
+
+    // Agregar una arista no dirigida entre dos nodos
+    void addEdge(int u, int v) {
+        adjList[u].push_back(v);
+        adjList[v].push_back(u);
+    }
+
+    // Imprimir la lista de adyacencia
+    void printGraph() {
+        for (int i = 0; i < V; ++i) {
+            cout << i << ": ";
+            for (int v : adjList[i])
+                cout << v << " ";
+            cout << endl;
+        }
+    }
+
+    // Calcular la centralidad de grado para cada nodo
+    void degreeCentrality() {
+        cout << "\nCentralidad de Grado:\n";
+        for (int i = 0; i < V; ++i) {
+            int degree = adjList[i].size();
+            cout << "Nodo " << i << ": " << degree << endl;
+        }
+    }
+
+    // Calcular la centralidad de cercanía usando BFS (Búsqueda en Anchura)
+    void closenessCentrality() {
+        cout << "\nCentralidad de Cercanía:\n";
+        for (int i = 0; i < V; ++i) {
+            vector<int> dist(V, -1); // Inicializamos distancias
+            queue<int> q;
+            q.push(i);
+            dist[i] = 0;
+            int totalDist = 0;
+            int reachable = 0;
+
+            while (!q.empty()) {
+                int u = q.front();
+                q.pop();
+
+                for (int v : adjList[u]) {
+                    if (dist[v] == -1) {
+                        dist[v] = dist[u] + 1;
+                        totalDist += dist[v];
+                        q.push(v);
+                        reachable++;
+                    }
+                }
+            }
+
+            // Centralidad de cercanía
+            if (reachable > 0) {
+                double closeness = reachable / static_cast<double>(totalDist);
+                cout << "Nodo " << i << ": " << fixed << setprecision(4) << closeness << endl;
+            } else {
+                cout << "Nodo " << i << ": 0.0000" << endl;
+            }
+        }
+    }
+};
+
+int main() {
+    int V = 6; // Número de vértices
+    Graph g(V);
+
+    // Definir algunas aristas
+    g.addEdge(0, 1);
+    g.addEdge(0, 2);
+    g.addEdge(1, 3);
+    g.addEdge(1, 4);
+    g.addEdge(2, 4);
+    g.addEdge(3, 5);
+    g.addEdge(4, 5);
+
+    // Imprimir la lista de adyacencia
+    g.printGraph();
+
+    // Calcular centralidades
+    g.degreeCentrality();
+    g.closenessCentrality();
+
+    return 0;
+}
